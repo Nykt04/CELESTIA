@@ -381,6 +381,124 @@
   }
   .mission-item p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-top: 6px; }
 
+  /* ------------------------------------------------------------------ *
+   * CINEMATIC MOTION DESIGN LOADING SCREEN
+   * ------------------------------------------------------------------ */
+  .loading-screen {
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--bg-void);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s;
+    will-change: opacity, transform;
+  }
+  .loading-screen.dismissed {
+    opacity: 0; transform: scale(1.05); filter: blur(6px); pointer-events: none;
+  }
+
+  .loader-content {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 32px;
+    max-width: 440px; width: calc(100vw - 40px);
+  }
+
+  /* Orbital Gyroscope Motion Design */
+  .orbital-gyro {
+    position: relative; width: 140px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .gyro-ring {
+    position: absolute; border-radius: 50%;
+  }
+  .gyro-ring-outer {
+    width: 140px; height: 140px;
+    border: 1px dashed rgba(0, 240, 255, 0.35);
+    animation: gyroSpin 14s linear infinite;
+  }
+  .gyro-ring-mid {
+    width: 104px; height: 104px;
+    border: 1px dotted rgba(255, 177, 46, 0.4);
+    animation: gyroSpinRev 9s linear infinite;
+  }
+  .gyro-ring-inner {
+    width: 72px; height: 72px;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-top-color: var(--cyan);
+    animation: gyroSpin 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+  .gyro-blip {
+    position: absolute; top: -4px; left: 66px; width: 8px; height: 8px;
+    background: var(--cyan); border-radius: 50%;
+    animation: gyroOrbit 14s linear infinite;
+    transform-origin: 4px 74px;
+  }
+  .gyro-blip-2 {
+    position: absolute; top: 14px; left: 66px; width: 6px; height: 6px;
+    background: var(--amber); border-radius: 50%;
+    animation: gyroOrbitRev 9s linear infinite;
+    transform-origin: 4px 56px;
+  }
+  .gyro-core {
+    position: relative; width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(10, 14, 26, 0.9); border: 1px solid var(--line-active);
+    display: grid; place-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  }
+
+  @keyframes gyroSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes gyroSpinRev {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+  @keyframes gyroOrbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes gyroOrbitRev {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  /* Telemetry & Progress Readout */
+  .loader-telemetry {
+    width: 100%; text-align: center; display: flex; flex-direction: column; gap: 10px;
+  }
+  .loader-title {
+    font-family: var(--font-display); font-size: 1.15rem; font-weight: 800;
+    letter-spacing: 0.12em; color: var(--ink); text-transform: uppercase;
+  }
+  .loader-status {
+    font-family: var(--font-mono); font-size: 0.76rem; font-weight: 600;
+    letter-spacing: 0.08em; color: var(--cyan); min-height: 18px;
+  }
+
+  .loader-track-wrap {
+    display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 6px;
+  }
+  .loader-track {
+    width: 100%; height: 4px; background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px; overflow: hidden; position: relative;
+  }
+  .loader-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--cyan), var(--amber));
+    border-radius: 2px;
+    transition: width 0.25s var(--ease-out);
+  }
+  .loader-metrics {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+  }
+  .loader-pct {
+    font-weight: 700; color: var(--ink); letter-spacing: 0.06em;
+  }
+  .loader-meta {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px;
+  }
+
   .sheet-handle, .mobile-peek-strip, .mobile-expand-hint { display: none; }
 
   /* Responsive Rules: Mobile Portrait & Landscape */
@@ -567,6 +685,45 @@
 </style>
 </head>
 <body>
+  <!-- CINEMATIC MOTION DESIGN LOADING SCREEN -->
+  <div id="loading-screen" class="loading-screen" aria-live="polite" role="status">
+    <div class="loader-content">
+      <!-- Animated Orbital Gyroscope Graphic -->
+      <div class="orbital-gyro" aria-hidden="true">
+        <div class="gyro-ring gyro-ring-outer"></div>
+        <div class="gyro-ring gyro-ring-mid"></div>
+        <div class="gyro-ring gyro-ring-inner"></div>
+        <div class="gyro-blip"></div>
+        <div class="gyro-blip gyro-blip-2"></div>
+        <div class="gyro-core">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="5" fill="var(--amber)" stroke="var(--amber)"/>
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="var(--amber)"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Tactical Title & Telemetry Progress -->
+      <div class="loader-telemetry">
+        <div class="loader-title">CELESTIA // ORBITAL DYNAMICS</div>
+        <div class="loader-status" id="loader-status">INITIALIZING CELESTIA CORE ENGINE...</div>
+
+        <!-- Segmented Progress Track -->
+        <div class="loader-track-wrap">
+          <div class="loader-track">
+            <div class="loader-bar" id="loader-bar"></div>
+          </div>
+          <div class="loader-metrics">
+            <span class="loader-step" id="loader-step">ASSETS [0 / 20]</span>
+            <span class="loader-pct" id="loader-pct">000%</span>
+          </div>
+        </div>
+
+        <div class="loader-meta">NASA TELEMETRY ATLAS // 60 FPS EPHEMERIS</div>
+      </div>
+    </div>
+  </div>
+
   <canvas id="scene" aria-label="Celestia 3D Planetary Simulation"></canvas>
 
   <!-- 3D FLOATING IN-SCENE TARGET MARKERS -->
@@ -1212,9 +1369,70 @@ function createMilkyWaySkybox() {
 createMilkyWaySkybox();
 
 /* ------------------------------------------------------------------ *
- * 5. TEXTURE LOADER WITH DUAL-PATH FALLBACK
+ * 5. TEXTURE LOADER WITH DUAL-PATH FALLBACK & CINEMATIC LOADER
  * ------------------------------------------------------------------ */
-const textureLoader = new THREE.TextureLoader();
+const loadingScreen = document.getElementById('loading-screen');
+const loaderStatus = document.getElementById('loader-status');
+const loaderBar = document.getElementById('loader-bar');
+const loaderPct = document.getElementById('loader-pct');
+const loaderStep = document.getElementById('loader-step');
+
+let assetsLoaded = 0;
+const totalAssetsExpected = 20;
+let loadingDismissed = false;
+
+function updateLoaderUI(loaded, total) {
+  const pct = Math.min(100, Math.round((loaded / total) * 100));
+  if (loaderBar) loaderBar.style.width = `${pct}%`;
+  if (loaderPct) loaderPct.textContent = `${String(pct).padStart(3, '0')}%`;
+  if (loaderStep) loaderStep.textContent = `ASSETS [${loaded} / ${total}]`;
+
+  if (loaderStatus) {
+    if (pct < 25) {
+      loaderStatus.textContent = 'INITIALIZING CELESTIA CORE ENGINE...';
+    } else if (pct < 55) {
+      loaderStatus.textContent = 'ACQUIRING NASA PLANETARY ATLAS & SURFACE MAPS...';
+    } else if (pct < 85) {
+      loaderStatus.textContent = 'SOLVING KEPLERIAN EPHEMERIS & ORBITAL MATRICES...';
+    } else if (pct < 100) {
+      loaderStatus.textContent = 'CALIBRATING 1,800-BODY ASTEROID BELT...';
+    } else {
+      loaderStatus.textContent = 'MISSION CONTROL READY // ALL SYSTEMS NOMINAL';
+    }
+  }
+}
+
+function dismissLoadingScreen() {
+  if (loadingDismissed) return;
+  loadingDismissed = true;
+  updateLoaderUI(totalAssetsExpected, totalAssetsExpected);
+  setTimeout(() => {
+    if (loadingScreen) {
+      loadingScreen.classList.add('dismissed');
+      playUiClick(1800, 0.08);
+      setTimeout(() => loadingScreen.remove(), 850);
+    }
+  }, 400);
+}
+
+const loadingManager = new THREE.LoadingManager(
+  () => {
+    dismissLoadingScreen();
+  },
+  (url, loaded, total) => {
+    assetsLoaded = loaded;
+    updateLoaderUI(loaded, Math.max(total, totalAssetsExpected));
+  },
+  () => {
+    assetsLoaded++;
+    updateLoaderUI(assetsLoaded, totalAssetsExpected);
+  }
+);
+
+// Fallback safety timeout so screen always dismisses cleanly
+setTimeout(dismissLoadingScreen, 3500);
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
 const fallbackCDN = 'https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/';
 
 function loadTexture(name) {
