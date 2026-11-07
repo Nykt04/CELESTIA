@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="sunGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fff8db"/>
+      <stop offset="35%" stop-color="#ffb12e"/>
+      <stop offset="80%" stop-color="#ff6b00"/>
+      <stop offset="100%" stop-color="#d9480f"/>
+    </radialGradient>
+    <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb12e" stop-opacity="0.5"/>
+      <stop offset="60%" stop-color="#ff781f" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffb12e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Deep Obsidian Shield -->
+  <circle cx="32" cy="32" r="30" fill="#03050a" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+
+  <!-- Outer Orbit Track -->
+  <ellipse cx="32" cy="32" rx="23" ry="9" fill="none" stroke="rgba(0,240,255,0.32)" stroke-width="1.2" transform="rotate(-25 32 32)"/>
+
+  <!-- Inner Orbit Track -->
+  <ellipse cx="32" cy="32" rx="16" ry="6.2" fill="none" stroke="rgba(0,240,255,0.55)" stroke-width="1.2" transform="rotate(20 32 32)"/>
+
+  <!-- Sun Corona Halo -->
+  <circle cx="32" cy="32" r="15" fill="url(#haloGrad)"/>
+
+  <!-- Central Sun -->
+  <circle cx="32" cy="32" r="8" fill="url(#sunGrad)"/>
+
+  <!-- Orbiting Blue Planet (Earth) with Cyan Glow -->
+  <circle cx="50" cy="24" r="2.8" fill="#3b7bd8" stroke="#00f0ff" stroke-width="0.8"/>
+
+  <!-- Orbiting Golden Planet (Saturn) with Ring -->
+  <ellipse cx="18" cy="27" rx="3.6" ry="1.2" fill="none" stroke="#e4c992" stroke-width="0.8" transform="rotate(30 18 27)"/>
+  <circle cx="18" cy="27" r="2" fill="#ffb12e"/>
+</svg>
