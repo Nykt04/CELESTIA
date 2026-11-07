@@ -234,27 +234,34 @@
     padding: 22px 24px 16px; border-bottom: 1px solid var(--line);
     position: relative;
   }
-  .close-drawer {
-    position: absolute; top: 18px; right: 18px; width: 32px; height: 32px;
-    border-radius: 8px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05);
-    color: var(--muted); display: grid; place-items: center; cursor: pointer;
-    transition: all 0.2s;
+  .drawer-actions {
+    position: absolute; top: 18px; right: 18px; display: flex; gap: 8px; z-index: 5;
   }
-  .close-drawer:hover { background: rgba(255, 255, 255, 0.12); color: var(--ink); border-color: var(--line-bright); }
+  .sheet-toggle { display: none; }
+  .close-drawer, .sheet-toggle {
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.05); color: var(--muted); display: grid;
+    place-items: center; cursor: pointer; transition: all 0.2s;
+  }
+  .close-drawer:hover, .sheet-toggle:hover {
+    background: rgba(255, 255, 255, 0.12); color: var(--ink); border-color: var(--line-bright);
+  }
 
+  .drawer-header h2 {
+    font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-top: 6px;
+    text-transform: uppercase; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
   .drawer-tag {
-    font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700;
-    letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase;
-    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.10em; color: var(--accent); text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255, 255, 255, 0.05); padding: 3px 8px; border-radius: 4px;
+    border: 1px solid var(--line-active); vertical-align: middle;
   }
   .drawer-tag::before {
     content: ''; width: 6px; height: 6px; background: var(--accent);
     border-radius: 1px;
-  }
-  .drawer-header h2 {
-    font-family: var(--font-display); font-size: clamp(2rem, 3.8vw, 2.5rem);
-    font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-top: 6px;
-    text-transform: uppercase;
   }
   .drawer-sub {
     font-size: 0.82rem; color: var(--muted); margin-top: 3px; font-weight: 500;
@@ -374,7 +381,7 @@
   }
   .mission-item p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-top: 6px; }
 
-  .sheet-handle { display: none; }
+  .sheet-handle, .mobile-peek-strip, .mobile-expand-hint { display: none; }
 
   /* Responsive Rules: Mobile Portrait & Landscape */
   @media (max-width: 768px) {
@@ -430,35 +437,94 @@
 
     /* Mobile Bottom Sheet Drawer */
     .sheet-handle {
-      display: block; width: 40px; height: 4px; border-radius: 2px;
-      background: rgba(255, 255, 255, 0.28); margin: -4px auto 12px;
+      display: block; width: 44px; height: 5px; border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35); margin: -4px auto 10px; cursor: pointer;
     }
+    .drawer-actions {
+      top: 14px; right: 14px; gap: 6px;
+    }
+    .sheet-toggle {
+      display: grid; width: 34px; height: 34px;
+    }
+    .close-drawer {
+      width: 34px; height: 34px;
+    }
+    .sheet-toggle .icon-collapse { display: none; }
+    .sheet-toggle .icon-expand { display: block; }
+    .telemetry-drawer.expanded .sheet-toggle .icon-collapse { display: block; }
+    .telemetry-drawer.expanded .sheet-toggle .icon-expand { display: none; }
+
     .telemetry-drawer {
-      top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-height: 72vh;
-      border-radius: 22px 22px 0 0; border-bottom: 0;
+      top: auto; bottom: 0; left: 0; right: 0; width: 100%;
+      border-radius: 20px 20px 0 0; border-bottom: 0;
       transform: translate3d(0, 100%, 0);
-      transition: transform 0.4s var(--ease-out), opacity 0.3s;
-      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.85);
+      transition: transform 0.35s var(--ease-out), max-height 0.35s var(--ease-out), height 0.35s var(--ease-out), opacity 0.3s;
+      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.88);
+      max-height: 220px;
+      height: auto;
     }
     .telemetry-drawer.open {
       transform: translate3d(0, 0, 0);
     }
     .drawer-header {
-      padding: 16px 20px 12px;
+      padding: 14px 18px 10px;
     }
-    .close-drawer {
-      top: 14px; right: 16px; width: 36px; height: 36px;
+    .drawer-header h2 {
+      font-size: 1.65rem; margin-top: 4px;
     }
-    .drawer-tabs {
+
+    /* In Peek Mode (default on mobile open) */
+    .telemetry-drawer.open:not(.expanded) {
+      max-height: 220px;
+    }
+    .telemetry-drawer.open:not(.expanded) .drawer-tabs,
+    .telemetry-drawer.open:not(.expanded) .drawer-body {
+      display: none;
+    }
+
+    /* Mobile Peek Telemetry Strip */
+    .mobile-peek-strip {
+      display: flex; gap: 8px; margin-top: 10px; padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.45); border: 1px solid var(--line-active); border-radius: 8px;
+      justify-content: space-between;
+    }
+    .peek-item {
+      display: flex; flex-direction: column; gap: 1px;
+    }
+    .peek-lbl {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em;
+    }
+    .peek-val {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: var(--accent);
+    }
+
+    /* Mobile Expand Prompt Bar */
+    .mobile-expand-hint {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; margin-top: 8px; padding: 6px 0 2px; border: 0; background: transparent;
+      font-family: var(--font-mono); font-size: 0.70rem; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--cyan); cursor: pointer;
+      border-top: 1px solid var(--line);
+    }
+
+    /* In Expanded Mode */
+    .telemetry-drawer.open.expanded {
+      max-height: 78vh;
+      height: 78vh;
+    }
+    .telemetry-drawer.open.expanded .mobile-peek-strip {
+      display: none;
+    }
+    .telemetry-drawer.open.expanded .drawer-tabs {
       display: flex; overflow-x: auto; scrollbar-width: none;
       -webkit-overflow-scrolling: touch; padding: 6px 12px;
     }
-    .drawer-tabs::-webkit-scrollbar { display: none; }
-    .drawer-tab {
+    .telemetry-drawer.open.expanded .drawer-tabs::-webkit-scrollbar { display: none; }
+    .telemetry-drawer.open.expanded .drawer-tab {
       flex: none; min-height: 38px; padding: 8px 14px; white-space: nowrap;
     }
-    .drawer-body {
-      padding: 14px 18px max(24px, env(safe-area-inset-bottom));
+    .telemetry-drawer.open.expanded .drawer-body {
+      display: block; flex: 1; padding: 14px 18px max(24px, env(safe-area-inset-bottom));
     }
     .spec-grid {
       grid-template-columns: 1fr;
@@ -486,7 +552,7 @@
     .telemetry-drawer.open {
       transform: translate3d(0, 0, 0);
     }
-    .sheet-handle { display: none; }
+    .sheet-handle, .mobile-peek-strip, .mobile-expand-hint { display: none; }
     .bottom-dock {
       width: min(520px, calc(100vw - 390px));
       left: 10px; transform: none; bottom: 8px;
@@ -601,14 +667,44 @@
 
   <!-- RIGHT DEEP-SPACE TELEMETRY DOSSIER DRAWER -->
   <aside class="telemetry-drawer cyber-panel" id="telemetry-drawer" aria-live="polite">
-    <div class="drawer-header">
-      <div class="sheet-handle" aria-hidden="true"></div>
-      <button class="close-drawer" id="btn-close-drawer" aria-label="Close Telemetry Dossier">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-      <div class="drawer-tag" id="dossier-tag">SOL-I // TERRESTRIAL</div>
-      <h2 id="dossier-title">MERCURY</h2>
+    <div class="drawer-header" id="drawer-header">
+      <div class="sheet-handle" id="sheet-handle" aria-label="Drag handle to expand or collapse dossier"></div>
+      <div class="drawer-actions">
+        <button class="sheet-toggle" id="btn-sheet-toggle" aria-label="Toggle Dossier Full View" title="Expand or collapse dossier">
+          <svg class="icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+          <svg class="icon-collapse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="close-drawer" id="btn-close-drawer" aria-label="Close Telemetry Dossier">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <h2>
+        <span id="dossier-title">MERCURY</span>
+        <span class="drawer-tag" id="dossier-tag">SOL-I // TERRESTRIAL</span>
+      </h2>
       <div class="drawer-sub" id="dossier-sub">First planet from the Sun</div>
+
+      <!-- Quick Telemetry for Mobile Peek Mode -->
+      <div class="mobile-peek-strip" id="mobile-peek-strip">
+        <div class="peek-item">
+          <span class="peek-lbl">VELOCITY</span>
+          <span class="peek-val" id="peek-speed">47.4 km/s</span>
+        </div>
+        <div class="peek-item">
+          <span class="peek-lbl">SOLAR DIST</span>
+          <span class="peek-val" id="peek-dist">0.39 AU</span>
+        </div>
+        <div class="peek-item">
+          <span class="peek-lbl">SOLAR FLUX</span>
+          <span class="peek-val" id="peek-flux">9,126 W/m²</span>
+        </div>
+      </div>
+
+      <!-- Mobile Expand Prompt / Action -->
+      <button class="mobile-expand-hint" id="mobile-expand-hint" aria-label="Toggle full dossier details">
+        <span id="hint-text">TAP TO EXPAND FULL DOSSIER</span>
+        <svg id="hint-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
     </div>
 
     <div class="drawer-tabs">
@@ -1397,6 +1493,15 @@ const pickables = bodies.map((b) => b.mesh);
 const carousel = document.getElementById('planet-carousel');
 const drawer = document.getElementById('telemetry-drawer');
 const btnCloseDrawer = document.getElementById('btn-close-drawer');
+const btnSheetToggle = document.getElementById('btn-sheet-toggle');
+const btnExpandHint = document.getElementById('mobile-expand-hint');
+const sheetHandle = document.getElementById('sheet-handle');
+const drawerHeader = document.getElementById('drawer-header');
+const peekSpeed = document.getElementById('peek-speed');
+const peekDist = document.getElementById('peek-dist');
+const peekFlux = document.getElementById('peek-flux');
+const hintText = document.getElementById('hint-text');
+const hintIcon = document.getElementById('hint-icon');
 const btnPlayPause = document.getElementById('btn-play-pause');
 const playPauseIcon = document.getElementById('play-pause-icon');
 const btnReset = document.getElementById('btn-reset');
@@ -1404,6 +1509,70 @@ const btnTour = document.getElementById('btn-tour');
 const speedPills = document.querySelectorAll('.speed-pill');
 const drawerTabs = document.querySelectorAll('.drawer-tab');
 const tabPanes = document.querySelectorAll('.tab-pane');
+
+function setDrawerExpanded(expand) {
+  if (!selected) return;
+  drawer.classList.toggle('expanded', expand);
+  if (hintText && hintIcon) {
+    hintText.textContent = expand ? 'COLLAPSE TO VIEW 3D MODEL' : 'TAP TO EXPAND FULL DOSSIER';
+    hintIcon.innerHTML = expand
+      ? '<polyline points="6 9 12 15 18 9"/>'
+      : '<polyline points="18 15 12 9 6 15"/>';
+  }
+  playUiClick(expand ? 1600 : 1100);
+}
+
+if (btnSheetToggle) {
+  btnSheetToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setDrawerExpanded(!drawer.classList.contains('expanded'));
+  });
+}
+if (btnExpandHint) {
+  btnExpandHint.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setDrawerExpanded(!drawer.classList.contains('expanded'));
+  });
+}
+if (sheetHandle) {
+  sheetHandle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setDrawerExpanded(!drawer.classList.contains('expanded'));
+  });
+}
+
+// Mobile touch swipe gestures on sheet header
+let touchStartY = 0;
+if (drawerHeader) {
+  drawerHeader.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  drawerHeader.addEventListener('touchend', (e) => {
+    const deltaY = e.changedTouches[0].clientY - touchStartY;
+    if (deltaY < -35) {
+      setDrawerExpanded(true);
+    } else if (deltaY > 35) {
+      if (drawer.classList.contains('expanded')) {
+        setDrawerExpanded(false);
+      } else {
+        deselect();
+      }
+    }
+  }, { passive: true });
+}
+
+function applyCameraOffsetForMobile() {
+  const isPortraitMobile = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+  if (isPortraitMobile && selected) {
+    // Vertically shift the projection viewport so the planet renders in upper 35% of the mobile screen
+    const yShift = Math.round(window.innerHeight * 0.18);
+    camera.setViewOffset(window.innerWidth, window.innerHeight, 0, yShift, window.innerWidth, window.innerHeight);
+  } else {
+    camera.clearViewOffset();
+  }
+  camera.updateProjectionMatrix();
+}
 
 // Populate Bottom Planet Carousel
 const planetPills = bodies.map((b, i) => {
@@ -1605,6 +1774,8 @@ function select(i) {
     offset: dir.multiplyScalar(selected.radius * 6.5 + 4.2)
   };
   prevPos.copy(selected.group.position);
+  setDrawerExpanded(false);
+  applyCameraOffsetForMobile();
   populateDossier(selected);
 }
 
@@ -1615,6 +1786,8 @@ function deselect() {
   }
   selected = null;
   drawer.classList.remove('open');
+  drawer.classList.remove('expanded');
+  applyCameraOffsetForMobile();
   planetPills.forEach((p) => p.classList.remove('active'));
   document.documentElement.style.setProperty('--accent', 'var(--cyan)');
   fly = null;
@@ -1713,6 +1886,8 @@ canvas.addEventListener('pointerup', (e) => {
   if (i >= 0) {
     playUiClick(1200);
     select(i);
+  } else if (drawer.classList.contains('expanded')) {
+    setDrawerExpanded(false);
   }
 });
 
@@ -1853,6 +2028,10 @@ function animate() {
 
     const deg = Math.round(((selected.angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) * (180 / Math.PI));
     liveAngle.textContent = `${deg}°`;
+
+    if (peekSpeed) peekSpeed.textContent = `${currentSpeedKmS} km/s`;
+    if (peekDist) peekDist.textContent = `${selected.realAU} AU`;
+    if (peekFlux) peekFlux.textContent = `${flux.toLocaleString()} W/m²`;
   }
 
   // Cinematic Tour Progression
@@ -1880,7 +2059,7 @@ animate();
  * ------------------------------------------------------------------ */
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
+  applyCameraOffsetForMobile();
   renderer.setSize(innerWidth, innerHeight);
 });
 </script>
